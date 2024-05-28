@@ -1,35 +1,27 @@
 import java.util.*;
 
-abstract class Search<V> {
-    protected Map<V, Boolean> marked; //Marked vertices
-    protected Map<V, V> edgeTo; //Last edge on the path to a vertex
-    protected final V source; // Source vertex
+public abstract class Search<Vertex> {
+    protected final Vertex source;
+    protected final Set<Vertex> marked;
+    protected final Map<Vertex, Vertex> edgeTo;
 
-    public Search(V source) {
+    public Search(Vertex source) {
         this.source = source;
-        this.marked = new HashMap<>();
+        this.marked = new HashSet<>();
         this.edgeTo = new HashMap<>();
     }
 
-    // Check if there is a path to a given vertex
-    public boolean hasPathTo(V v) {
-        return marked.getOrDefault(v, false);
+    public boolean hasPathTo(Vertex v) {
+        return marked.contains(v);
     }
 
-    // Return the path to a given vertex
-    public Iterable<V> pathTo(V v) {
+    public Iterable<Vertex> pathTo(Vertex v) {
         if (!hasPathTo(v)) return null;
-        LinkedList<V> path = new LinkedList<>();
-        for (V x = v; x != source; x = edgeTo.get(x)) {
+        LinkedList<Vertex> path = new LinkedList<>();
+        for (Vertex x = v; x != source; x = edgeTo.get(x)) {
             path.addFirst(x);
         }
         path.addFirst(source);
         return path;
-    }
-
-    // Clear the search state
-    public void reset() {
-        marked.clear();
-        edgeTo.clear();
     }
 }

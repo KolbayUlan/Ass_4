@@ -1,39 +1,31 @@
 public class Main {
+
     public static void main(String[] args) {
-        // Create a directed weighted graph
         WeightedGraph<String> weightedGraph = new WeightedGraph<>(true);
         fillWithWeights(weightedGraph);
 
         System.out.println("Dijkstra:");
-        // Perform Dijkstra's search from "Almaty"
         Search<String> djk = new DijkstraSearch<>(weightedGraph, "Almaty");
-        // Output the path to "Kyzylorda"
         outputPath(djk, "Kyzylorda");
 
         System.out.println("--------------------------------");
 
-        // Create a directed unweighted graph
         MyGraph<String> graph = new MyGraph<>(true);
         fillWithoutWeights(graph);
 
         System.out.println("DFS:");
-        // Perform Depth First Search from "Almaty"
         Search<String> dfs = new DepthFirstSearch<>(graph, "Almaty");
-        // Output the path to "Kyzylorda"
         outputPath(dfs, "Kyzylorda");
 
         System.out.println("--------------------------------");
 
         System.out.println("BFS:");
-        // Perform Breadth First Search from "Almaty"
         Search<String> bfs = new BreadthFirstSearch<>(graph, "Almaty");
-        // Output the path to "Kyzylorda"
         outputPath(bfs, "Kyzylorda");
     }
 
-    // Fill the unweighted graph with edges
     public static void fillWithoutWeights(MyGraph<String> graph) {
-        graph.addEdge("Almaty", "Astana"); // 16 - 19
+        graph.addEdge("Almaty", "Astana");
         graph.addEdge("Shymkent", "Atyrau");
         graph.addEdge("Atyrau", "Astana");
         graph.addEdge("Almaty", "Shymkent");
@@ -42,7 +34,6 @@ public class Main {
         graph.addEdge("Shymkent", "Kyzylorda");
     }
 
-    // Fill the weighted graph with edges
     public static void fillWithWeights(WeightedGraph<String> graph) {
         graph.addEdge("Almaty", "Astana", 2.1);
         graph.addEdge("Shymkent", "Atyrau", 7.8);
@@ -53,7 +44,6 @@ public class Main {
         graph.addEdge("Shymkent", "Kyzylorda", 5.4);
     }
 
-    // Output the path from the source to the target
     public static void outputPath(Search<String> search, String key) {
         Iterable<String> path = search.pathTo(key);
         if (path != null) {
@@ -66,5 +56,3 @@ public class Main {
         System.out.println();
     }
 }
-
-

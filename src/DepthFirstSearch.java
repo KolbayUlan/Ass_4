@@ -1,17 +1,25 @@
-class DepthFirstSearch<V> extends Search<V> {
-    public DepthFirstSearch(WeightedGraph<V> graph, V source) {
+import java.util.Stack;
+
+public class DepthFirstSearch<Vertex> extends Search<Vertex> {
+    public DepthFirstSearch(MyGraph<Vertex> graph, Vertex source) {
         super(source);
         dfs(graph, source);
     }
 
-    // Perform DFS from the source vertex
-    private void dfs(WeightedGraph<V> graph, V v) {
-        marked.put(v, true);
-        Vertex<V> vertex = graph.getVertex(v);
-        for (Vertex<V> w : vertex.getAdjacentVertices().keySet()) {
-            if (!marked.getOrDefault(w.getData(), false)) {
-                edgeTo.put(w.getData(), v);
-                dfs(graph, w.getData());
+    private void dfs(MyGraph<Vertex> graph, Vertex current) {
+        marked.add(current);
+        Stack<Vertex> stack = new Stack<>();
+        stack.push(current);
+
+        while (!stack.isEmpty()) {
+            Vertex v = stack.pop();
+
+            for (Vertex vertex : graph.adjacencyList(v)) {
+                if (!marked.contains(vertex)) {
+                    marked.add(vertex);
+                    edgeTo.put(vertex, v);
+                    stack.push(vertex);
+                }
             }
         }
     }

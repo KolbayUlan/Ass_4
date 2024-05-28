@@ -1,54 +1,80 @@
 import java.util.*;
 
-class WeightedGraph<V> {
-    private Map<V, Vertex<V>> vertices; //Map of vertices by their data
-    private boolean directed; //Indicates if the graph is directed or not
+public class WeightedGraph<Vertex> {
+    private final boolean undirected;
+    private final Map<Vertex, List<Edge<Vertex>>> map = new HashMap<>();
 
-    public WeightedGraph(boolean directed) {
-        this.directed = directed;
-        this.vertices = new HashMap<>();
+    public WeightedGraph() {
+        this(true);
     }
 
-    // Add an edge with a weight between two vertices
-    public void addEdge(V source, V dest, double weight) {
-        Vertex<V> srcVertex = vertices.computeIfAbsent(source, Vertex::new);
-        Vertex<V> destVertex = vertices.computeIfAbsent(dest, Vertex::new);
+    public WeightedGraph(boolean undirected) {
+        this.undirected = undirected;
+    }
 
-        srcVertex.addAdjacentVertex(destVertex, weight);
-        if (!directed) {
-            destVertex.addAdjacentVertex(srcVertex, weight);
+    public void addVertex(Vertex v) {
+        if (hasVertex(v))
+            return;
+
+        map.put(v, new LinkedList<>());
+    }
+
+    public void addEdge(Vertex source, Vertex dest, double weight) {
+        if (!hasVertex(source))
+            addVertex(source);
+
+        if (!hasVertex(dest))
+            addVertex(dest);
+
+        if (hasEdge(source, dest) || source.equals(dest))
+            return; // reject parallels & self-loops
+
+        map.get(source).add(new Edge<>(source, dest, weight));
+
+        if (undirected)
+            map.get(dest).add(new Edge<>(dest, source, weight));
+    }
+
+    public int getVerticesCount() {
+        return map.size();
+    }
+
+    public int getEdgesCount() {
+        int count = 0;
+        for (Vertex v : map.keySet()) {
+            count += map.get(v).size();
         }
+
+        if (undirected)
+            count /= 2;
+
+        return count;
     }
 
-    public Vertex<V> getVertex(V key) {
-        return vertices.get(key);
+    public boolean hasVertex(Vertex v) {
+        return map.containsKey(v);
     }
 
-    public Set<V> getVertices() {
-        return vertices.keySet();
+    public boolean hasEdge(Vertex source, Vertex dest) {
+        if (!hasVertex(source)) return false;
+
+        return map.get(source).contains(new Edge<>(source, dest));
     }
 
-    // Get the weight of the edge between two vertices
-    public double getEdgeWeight(V source, V dest) {
-        Vertex<V> srcVertex = vertices.get(source);
-        Vertex<V> destVertex = vertices.get(dest);
-        return srcVertex.getWeightTo(destVertex);
+    public List<Vertex> adjacencyList(Vertex v) {
+        if (!hasVertex(v)) return null;
+
+        List<Vertex> vertices = new LinkedList<>();
+        for (Edge<Vertex> e : map.get(v)) {
+            vertices.add(e.getDest());
+        }
+
+        return vertices;
     }
 
-    // Check if the graph contains a given vertex
-    public boolean hasVertex(V key) {
-        return vertices.containsKey(key);
-    }
+    public Iterable<Edge<Vertex>> getEdges(Vertex v) {
+        if (!hasVertex(v)) return null;
 
-    // Check if there is an edge between two vertices
-    public boolean hasEdge(V source, V dest) {
-        Vertex<V> srcVertex = vertices.get(source);
-        Vertex<V> destVertex = vertices.get(dest);
-        return srcVertex != null && destVertex != null && srcVertex.hasAdjacentVertex(destVertex);
-    }
-
-    // Clear all vertices from the graph
-    public void reset() {
-        vertices.clear();
+        return map.get(v);
     }
 }
